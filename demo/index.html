@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <title>vcf-toolbar-layout demo</title>
+    <script dev src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script dev type="module" src="demo.js"></script>
+    <script>
+        window.addEventListener('WebComponentsReady', () => document.querySelector('main').classList.remove('hidden'));
+    </script>
+
+    <!-- demo styles -->
+    <style>
+        .resizable-wrapper {
+            border: 1px solid var(--lumo-contrast-20pct);
+            border-radius: var(--lumo-border-radius-m);
+            overflow: hidden;
+            padding: var(--lumo-space-s);
+            resize: horizontal;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <div>
+        <vaadin-button id="collapse-all-btn">Collapse All</vaadin-button>
+        <vaadin-button id="expad-all-btn">Expand All</vaadin-button>
+    </div>
+
+    <h3>Basic Demo Sample</h3>
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout>
+            <vaadin-text-field placeholder="Search">
+                <vaadin-icon slot="suffix" icon="vaadin:search"></vaadin-icon>
+            </vaadin-text-field>
+            <hr />
+            <vaadin-button>
+                Download
+                <vaadin-icon icon="vaadin:download" slot="suffix"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-button theme="icon error">
+                <vaadin-icon icon="vaadin:close"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-menu-bar theme="dropdown-indicators"></vaadin-menu-bar>
+            <a href="#">Link</a>
+            <vaadin-combo-box
+                    placeholder="Select user"
+            ></vaadin-combo-box>
+        </vcf-toolbar-layout>
+    </div>
+
+    <h3>Reverse Collapse</h3>
+    <p>Add attribute: <code>reverse-collapse</code></p>
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout reverse-collapse>
+            <vaadin-text-field placeholder="Search">
+                <vaadin-icon slot="suffix" icon="vaadin:search"></vaadin-icon>
+            </vaadin-text-field>
+            <hr />
+            <vaadin-button>
+                Download
+                <vaadin-icon icon="vaadin:download" slot="suffix"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-button theme="icon error">
+                <vaadin-icon icon="vaadin:close"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-menu-bar theme="dropdown-indicators"></vaadin-menu-bar>
+            <a href="#">Link</a>
+            <vaadin-combo-box
+                    placeholder="Select user"
+            ></vaadin-combo-box>
+        </vcf-toolbar-layout>
+    </div>
+
+    <h3>Configure Overflow Update Delay</h3>
+    <p>Set attribute: <code>update-debounce-delay="500"</code> (default is 20ms)</p>
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout update-debounce-delay="500">
+            <vaadin-text-field placeholder="Search">
+                <vaadin-icon slot="suffix" icon="vaadin:search"></vaadin-icon>
+            </vaadin-text-field>
+            <hr />
+            <vaadin-button>
+                Download
+                <vaadin-icon icon="vaadin:download" slot="suffix"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-button theme="icon error">
+                <vaadin-icon icon="vaadin:close"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-menu-bar theme="dropdown-indicators"></vaadin-menu-bar>
+            <a href="#">Link</a>
+            <vaadin-combo-box
+                    placeholder="Select user"
+            ></vaadin-combo-box>
+        </vcf-toolbar-layout>
+    </div>
+
+    <h3>Buttons</h3>
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout>
+            <vaadin-button theme="primary">
+                Save
+            </vaadin-button>
+            <vaadin-button>
+                <vaadin-icon icon="vaadin:upload" slot="prefix"></vaadin-icon>
+                Prefix
+            </vaadin-button>
+            <vaadin-button>
+                Suffix
+                <vaadin-icon icon="vaadin:download" slot="suffix"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-button theme="icon error">
+                <vaadin-icon icon="vaadin:close"></vaadin-icon>
+            </vaadin-button>
+        </vcf-toolbar-layout>
+    </div>
+
+    <h3>MenuBar</h3>
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout>
+            <vaadin-menu-bar theme="dropdown-indicators"></vaadin-menu-bar>
+            <vaadin-menu-bar></vaadin-menu-bar>
+        </vcf-toolbar-layout>
+    </div>
+
+    <h3>Has Label Components</h3>
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout>
+            <vaadin-text-field label="Has Label"></vaadin-text-field>
+            <vaadin-text-field placeholder="No Label"></vaadin-text-field>
+            <vaadin-text-field label="Has Label + Suffix">
+                <vaadin-icon slot="suffix" icon="vaadin:search"></vaadin-icon>
+            </vaadin-text-field>
+            <vaadin-text-field placeholder="No Label + Prefix">
+                <vaadin-icon slot="prefix" icon="vaadin:edit"></vaadin-icon>
+            </vaadin-text-field>
+            <vaadin-combo-box
+                    label="User"
+                    placeholder="Please select"
+            ></vaadin-combo-box>
+            <vaadin-combo-box
+                    placeholder="User"
+            ></vaadin-combo-box>
+        </vcf-toolbar-layout>
+    </div>
+
+    <script>
+        // Collapse all button
+        const collapseAllBtn = document.getElementById('collapse-all-btn');
+        collapseAllBtn.addEventListener('click', () => {
+            const overflowMenus = document.querySelectorAll('vcf-toolbar-layout');
+            overflowMenus.forEach((menu) => {
+                menu.parentElement.style.width = '50px';
+            });
+        });
+
+        // Expand all button
+        const expandAllBtn = document.getElementById('expad-all-btn');
+        expandAllBtn.addEventListener('click', () => {
+            const overflowMenus = document.querySelectorAll('vcf-toolbar-layout');
+            overflowMenus.forEach((menu) => {
+                menu.parentElement.style.width = 'auto';
+            });
+        });
+
+        document.querySelectorAll('vaadin-menu-bar').forEach((menuBar) => {
+            menuBar.items = [
+                {
+                    text: 'Actions',
+                    children: [{ text: 'MenuBar Child 1' }, { text: 'MenuBar Child 2' }],
+                }
+            ];
+        });
+        document.querySelectorAll('vaadin-combo-box').forEach((combo) => {
+            combo.items = [
+                { name: 'User 1' },
+                { name: 'User 2' },
+                { name: 'User 3' },
+                { name: 'User 4' },
+                { name: 'User 5' },
+            ];
+            combo.renderer = (root, combo, model) => {
+                const item = model.item;
+                root.textContent = item.name;
+            };
+        });
+    </script>
+</main>
+</body>
+</html>

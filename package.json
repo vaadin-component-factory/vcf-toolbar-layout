@@ -1,0 +1,125 @@
+{
+  "name": "@vaadin-component-factory/vcf-toolbar-layout",
+  "version": "1.0.0",
+  "description": "Web Component providing an a toolbar layout with overflow support.",
+  "author": "Vaadin Ltd",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
+  "license": "https://raw.githubusercontent.com/vaadin-component-factory/vcf-toolbar-layout/main/LICENSE",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./dist/src/vcf-toolbar-layout.js": "./dist/src/vcf-toolbar-layout.js"
+  },
+  "files": [
+    "vcf-*.js",
+    "src",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vaadin-component-factory/vcf-toolbar-layout.git"
+  },
+  "keywords": [
+    "Vaadin",
+    "vaadin-component-factory",
+    "vcf-toolbar-layout",
+    "web-components",
+    "web-component",
+    "lit-element",
+    "typescript",
+    "lit",
+    "vcf"
+  ],
+  "scripts": {
+    "analyze": "cem analyze --litelement",
+    "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
+    "build": "tsc && npm run analyze -- --exclude dist",
+    "prepublish": "tsc && npm run analyze -- --exclude dist",
+    "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
+    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
+    "test": "tsc && wtr --coverage",
+    "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\""
+  },
+  "dependencies": {
+    "@vaadin/button": "^24.7.1",
+    "@vaadin/component-base": "^24.5.8",
+    "@vaadin/popover": "^24.5.8",
+    "@vaadin/vaadin-lumo-styles": "^24.5.8",
+    "@vaadin/vaadin-themable-mixin": "^24.5.8",
+    "@vaadin/vertical-layout": "^24.5.8",
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.6.3",
+    "@open-wc/eslint-config": "^9.2.1",
+    "@open-wc/testing": "^3.1.6",
+    "@polymer/iron-component-page": "^4.0.1",
+    "@polymer/iron-demo-helpers": "^3.0.0-pre.19",
+    "@types/jest": "^29.5.14",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "@vaadin/combo-box": "^24.7.1",
+    "@vaadin/date-picker": "^24.7.1",
+    "@vaadin/icon": "^24.7.1",
+    "@vaadin/icons": "^24.7.1",
+    "@vaadin/menu-bar": "^24.7.1",
+    "@vaadin/text-field": "^24.7.1",
+    "@web/dev-server": "^0.4.3",
+    "@web/test-runner": "^0.19.0",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "concurrently": "^7.2.2",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.5.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "tslib": "^2.4.0",
+    "typescript": "^5.5.2"
+  },
+  "bugs": {
+    "url": "https://github.com/vaadin-component-factory/vcf-toolbar-layout/issues"
+  },
+  "homepage": "https://github.com/vaadin-component-factory/vcf-toolbar-layout#readme",
+  "directories": {
+    "test": "test"
+  },
+  "customElements": "custom-elements.json",
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "@open-wc",
+      "prettier"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "error",
+      "import/no-unresolved": "off",
+      "import/extensions": [
+        "error",
+        "always",
+        {
+          "ignorePackages": true
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
