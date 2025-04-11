@@ -63,8 +63,8 @@ export class VcfToolbarLayout extends ResizeMixin(
         align-self: stretch;
         width: 1px;
         border: none; /* remove default border */
-        border-left: 1px solid var(--lumo-contrast-10pct);
-        margin: 0 8px;
+        background: var(--lumo-contrast-10pct);
+        margin: var(--lumo-space-xs);
       }
 
       /* Overflow button is hidden unless needed */
@@ -83,38 +83,57 @@ export class VcfToolbarLayout extends ResizeMixin(
 
   // overflow container is attached to the popover overlay (different shadow root) so we need to inject styles globally
   protected readonly _overflowContainerStyles: string = `
+    /* Hide label on icon buttons */
+    vcf-toolbar-layout vaadin-button[theme~="icon"]::part(label) {
+      display: none;
+    }
+  
     .overflow-container {
-      --overflow-container-item-width: 200px;
-      --overflow-container-item-height: 40px;
       --overflow-container-padding: var(--lumo-space-s);
       --overflow-container-item-gap: var(--lumo-space-xs);
-      --overflow-container-prefix-width: 40px;
-      --overflow-container-suffix-width: 40px;
       --overflow-container-text-color: var(--lumo-body-text-color);
-      --overflow-container-background-color: var(--lumo-contrast-5pct);
+      --overflow-container-prefix-suffix-color: var(--lumo-tertiary-text-color);
 
       /* vaadin component overrides */
       --vaadin-button-background: transparent;
       --vaadin-button-text-color: var(--lumo-body-text-color);
-      --vaadin-button-font-weight: var(--lumo-font-weight-normal);
+      --vaadin-button-font-weight: 400;
 
-      background-color: var(--overflow-container-background-color);
-      flex-direction: column;
+      align-items: stretch;
       gap: var(--overflow-container-item-gap);
       padding: var(--overflow-container-padding);
     }
-
-    .overflow-container > * {
-      height: var(--overflow-container-item-height);
-      width: var(--overflow-container-item-width);
+    
+    .overflow-container > *:first-child {
+      padding-top: 0;
+    }
+    
+    .overflow-container > *:last-child {
+      padding-bottom: 0;
+    }
+    
+    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container {
+      --overflow-container-prefix-width: var(--lumo-space-l);
     }
 
     /* native element styles */
+    
+    vcf-toolbar-layout hr:last-child {
+      visibility: hidden;
+      margin: 0;
+      margin-right: calc(-1 * var(--vcf-toolbar-layout-gap));
+      width: 0;
+    }
+    
+    .overflow-container > hr:first-child {
+      display: none;
+    }
 
     .overflow-container > hr {
-      border-color: var(--lumo-contrast-5pct);
+      border: none;
+      background-color: var(--lumo-contrast-10pct);
       margin: 0;
-      height: auto;
+      height: 1px;
       width: 100%;
     }
 
@@ -124,31 +143,47 @@ export class VcfToolbarLayout extends ResizeMixin(
     }
 
     /* vaadin component styles */
-
+    
+    :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
+    :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix) {
+      color: var(--overflow-container-prefix-suffix-color);
+    }
+    
+    .overflow-container > [has-label]:first-child {
+      padding-top: 0;
+    }
+    
     .overflow-container > [has-label] {
-        height: auto;
-        padding-top: 0;
+      padding-top: var(--lumo-space-s);
     }
 
-    .overflow-container > vaadin-menu-bar {
-      width: var(--overflow-container-item-width);
-      box-size: border-box;
+    .overflow-container > vaadin-button,
+    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
+      --vaadin-button-padding: var(--lumo-space-s);
+      --vaadin-button-margin: 0px;
     }
 
     .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
-      width: calc(var(--overflow-container-item-width) - 4px); /* todo: triggers overflow without -4px - why? */
+      width: 100%;
     }
-
-    .overflow-container > vaadin-button::part(prefix),
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix) {
-      text-align: left;
-      width: var(--overflow-container-prefix-width);
+    
+    .overflow-container > vaadin-button[theme~="primary"] {
+      background: var(--vaadin-button-background);
+      color: var(--lumo-primary-text-color);
+      font-weight: var(--vaadin-button-font-weight);
     }
-
-    .overflow-container > vaadin-button::part(suffix),
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(suffix) {
-      text-align: right;
-      width: var(--overflow-container-suffix-width);
+    
+    .overflow-container > vaadin-button[theme~="icon"]::part(prefix) {
+      margin-left: -0.25em;
+      margin-right: 0.25em;
+    }
+    
+    /* Theme variant to hide prefix & suffix in overflow container */
+    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-button::part(prefix),
+    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-button::part(suffix),
+    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix),
+    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(suffix) {
+      display: none;
     }
 
     .overflow-container > vaadin-button::part(label),
@@ -156,7 +191,29 @@ export class VcfToolbarLayout extends ResizeMixin(
       text-align: left;
       flex-grow: 1;
     }
+    
+    .overflow-container > ::part(input-field) {
+      padding: 0 var(--lumo-space-xs);
+    }
+    
+    .overflow-container > a {
+      padding: 0 var(--lumo-space-s);
+      height: var(--lumo-size-m);
+    }
+    
+    /* Theme variant forcing horizonal alignment of prefixes */
+    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container > vaadin-button::part(prefix),
+    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix) {
+      width: var(--overflow-container-prefix-width);
+    }
+    
+    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container > a {
+      padding-left: calc(var(--lumo-space-s) + 0.2em + var(--overflow-container-prefix-width, 0px));
+    }
   `;
+
+  @property({ type: String, reflect: true })
+  theme: string | null = null;
 
   /**
    * If true, the buttons will be collapsed into the overflow menu
@@ -255,7 +312,7 @@ export class VcfToolbarLayout extends ResizeMixin(
       </vaadin-button>
       <vaadin-popover
         part="popover"
-        theme="no-padding"
+        theme="no-padding ${this.theme}"
       ></vaadin-popover>
     `;
   }
