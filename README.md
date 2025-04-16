@@ -16,8 +16,6 @@
   - **`hide-icons`** – automatically hides icons on items within the overflow popover.
 - **Keyboard Navigation:**  
   Complete keyboard support for menu navigation.
-- **Custom Overflow Button:**  
-  Use a custom overflow button by passing a button element with `slot="overflow-button"`.
 - **Grouping Items:**  
   Group items by passing in a layout/container element; grouped items collapse and display together in the overflow popover.
 
@@ -44,16 +42,6 @@ import '@vaadin-component-factory/vcf-toolbar-layout';
   <vaadin-button>Button 1</vaadin-button>
   <vaadin-button>Button 2</vaadin-button>
   <vaadin-button>Button 3</vaadin-button>
-</vcf-toolbar-layout>
-```
-
-### Custom Overflow Button
-
-```html
-<vcf-toolbar-layout>
-  <button slot="overflow-button" aria-label="More options">...</button>
-  <vaadin-button>Button 1</vaadin-button>
-  <vaadin-button>Button 2</vaadin-button>
 </vcf-toolbar-layout>
 ```
 
@@ -126,7 +114,7 @@ npm install
 npm start
 ```
 
-A demo page will launch in your browser, showcasing how `<vcf-toolbar-layout>` handles overflow, reverse collapse, custom overflow buttons, theming, grouping, and keyboard navigation.
+A demo page will launch in your browser, showcasing how `<vcf-toolbar-layout>` handles overflow, reverse collapse, theming, grouping, and keyboard navigation.
 
 ## Contributing
 
