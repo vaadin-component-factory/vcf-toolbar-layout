@@ -157,13 +157,18 @@ export class VcfToolbarLayout extends ResizeMixin(
       padding-top: var(--lumo-space-s);
     }
 
+    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
+      justify-content: left;
+    }
+
     .overflow-container > vaadin-button,
     .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
       --vaadin-button-padding: var(--lumo-space-s);
       --vaadin-button-margin: 0px;
     }
 
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
+    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button,
+    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
       width: 100%;
     }
     
