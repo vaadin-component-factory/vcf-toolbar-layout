@@ -103,28 +103,6 @@
         </vcf-toolbar-layout>
     </div>
 
-    <h3>Buttons</h3>
-    <p><code>hide-icons</code> theme variant.</p>
-    <div class="resizable-wrapper">
-        <vcf-toolbar-layout theme="hide-icons">
-            <vaadin-button theme="primary">
-                Save
-            </vaadin-button>
-            <vaadin-button>
-                <vaadin-icon icon="vaadin:upload" slot="prefix"></vaadin-icon>
-                Prefix
-            </vaadin-button>
-            <vaadin-button>
-                Suffix
-                <vaadin-icon icon="vaadin:download" slot="suffix"></vaadin-icon>
-            </vaadin-button>
-            <vaadin-button theme="icon error">
-                <vaadin-icon icon="vaadin:close" slot="prefix"></vaadin-icon>
-                Remove
-            </vaadin-button>
-        </vcf-toolbar-layout>
-    </div>
-
     <h3>MenuBar</h3>
     <div class="resizable-wrapper">
         <vcf-toolbar-layout>
@@ -188,6 +166,28 @@
             <vaadin-text-field placeholder="No Label + Prefix">
                 <vaadin-icon slot="prefix" icon="vaadin:edit"></vaadin-icon>
             </vaadin-text-field>
+        </vcf-toolbar-layout>
+    </div>
+
+    <h3>Hide icons</h3>
+    <p><code>hide-icons</code> theme variant hides button icons when in overflow menu.</p>
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout theme="hide-icons">
+            <vaadin-button theme="primary">
+                Save
+            </vaadin-button>
+            <vaadin-button>
+                <vaadin-icon icon="vaadin:upload" slot="prefix"></vaadin-icon>
+                Prefix
+            </vaadin-button>
+            <vaadin-button>
+                Suffix
+                <vaadin-icon icon="vaadin:download" slot="suffix"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-button theme="icon error">
+                <vaadin-icon icon="vaadin:close" slot="prefix"></vaadin-icon>
+                Remove
+            </vaadin-button>
         </vcf-toolbar-layout>
     </div>
 
