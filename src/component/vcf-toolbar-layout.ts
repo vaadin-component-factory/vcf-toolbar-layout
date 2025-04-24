@@ -56,17 +56,6 @@ export class VcfToolbarLayout extends ResizeMixin(
         gap: var(--vcf-toolbar-layout-gap););
       }
 
-      /* <hr> elements are vertical in the normal menu */
-      ::slotted(hr) {
-        display: inline-block;
-        flex-shrink: 0;
-        align-self: stretch;
-        width: 1px;
-        border: none; /* remove default border */
-        background: var(--lumo-contrast-10pct);
-        margin: var(--lumo-space-xs);
-      }
-
       /* Overflow button is hidden unless needed */
       [slot='overflow-button'] {
         display: none;
@@ -104,19 +93,21 @@ export class VcfToolbarLayout extends ResizeMixin(
       padding: var(--overflow-container-padding);
     }
     
-    .overflow-container > *:first-child {
-      padding-top: 0;
-    }
-    
-    .overflow-container > *:last-child {
-      padding-bottom: 0;
-    }
-    
     vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container {
       --overflow-container-prefix-width: var(--lumo-space-l);
     }
 
     /* native element styles */
+    vcf-toolbar-layout  hr {
+      display: inline-block;
+      flex-shrink: 0;
+      align-self: stretch;
+      width: 1px;
+      height: auto;
+      border: none;
+      background-color: var(--lumo-contrast-10pct);
+      margin: var(--lumo-space-xs);
+    }
     
     vcf-toolbar-layout hr:last-child {
       visibility: hidden;
@@ -156,6 +147,10 @@ export class VcfToolbarLayout extends ResizeMixin(
     .overflow-container > [has-label] {
       padding-top: var(--lumo-space-s);
     }
+    
+    vcf-toolbar-layout > vaadin-menu-bar > vaadin-menu-bar-button {
+      width: unset !important;
+    }
 
     .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
       justify-content: left;
@@ -166,8 +161,12 @@ export class VcfToolbarLayout extends ResizeMixin(
       --vaadin-button-padding: var(--lumo-space-s);
       --vaadin-button-margin: 0px;
     }
-
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button,
+    
+    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
+      width: unset !important;
+      flex: 1;
+    }
+    
     .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
       width: 100%;
     }
