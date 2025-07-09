@@ -240,7 +240,6 @@ export class VcfToolbarLayout extends ResizeMixin(
 
   connectedCallback(): void {
     super.connectedCallback();
-    console.log('connectedCallback');
 
     // inject global styles for the overflow container since it will be moved to a different shadow root (popover overlay)
     this._injectGlobalStyles();
@@ -252,7 +251,6 @@ export class VcfToolbarLayout extends ResizeMixin(
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    console.log('disconnectedCallback');
 
     // remove global styles
     this._removeGlobalStyles();
@@ -276,7 +274,7 @@ export class VcfToolbarLayout extends ResizeMixin(
     // get the overflow button
     this._overflowButton = this.shadowRoot.querySelector('[slot="overflow-button"]') as HTMLElement;
 
-    // setup oveflow container
+    // setup overflow container
     this._overflowContainer = document.createElement('vaadin-vertical-layout');
     this._overflowContainer.classList.add('overflow-container');
 
@@ -337,7 +335,6 @@ export class VcfToolbarLayout extends ResizeMixin(
    * Elements in the overflow container are hidden and only shown when the overflow button is clicked.
    */
   protected _updateOverflowingItems() {
-    console.log('Update overflowing items');
 
     // todo: include container gap/padding/etc value in calculation?
     const overflowButtonWidth = this._overflowButton ? this._overflowButton.getBoundingClientRect().width : 0;
@@ -430,8 +427,6 @@ export class VcfToolbarLayout extends ResizeMixin(
       // must insert at beginning of overflow container to ensure order stays consistent with normal menu
       this._overflowContainer.insertBefore(item, this._overflowContainer.firstChild);
     }
-    
-    console.log('Moved item to overflow container:', item);
   }
 
   protected _moveItemToMainContainer(item: Element) {
@@ -444,8 +439,6 @@ export class VcfToolbarLayout extends ResizeMixin(
       // must insert at end of main container to ensure order stays consistent with normal menu
       this.appendChild(item);
     }
-    
-    console.log('Moved item to main container:', item);
   }
 
   /**
