@@ -45,6 +45,14 @@ import '@vaadin-component-factory/vcf-toolbar-layout';
 </vcf-toolbar-layout>
 ```
 
+### Custom Overflow Button
+
+```html
+<vcf-toolbar-layout>
+  <vaadin-button slot="overflow-button">View overflow items</vaadin-button>
+</vcf-toolbar-layout>
+```
+
 ### Reverse Collapse and Debounce Delay
 
 ```html

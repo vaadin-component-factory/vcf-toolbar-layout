@@ -26,6 +26,7 @@ import '@vaadin/button';
 import '@vaadin/popover';
 import '@vaadin/vertical-layout';
 import { Popover } from '@vaadin/popover';
+import { Button } from '@vaadin/button';
 
 @customElement('vcf-toolbar-layout')
 export class VcfToolbarLayout extends ResizeMixin(
@@ -56,27 +57,28 @@ export class VcfToolbarLayout extends ResizeMixin(
         gap: var(--vcf-toolbar-layout-gap););
       }
 
-      /* Overflow button is hidden unless needed */
-      [slot='overflow-button'] {
+      ::slotted([slot="overflow-button"]) {
         display: none;
       }
-      [slot='overflow-button'].visible {
+
+      ::slotted([slot="overflow-button"].visible) {
         display: initial;
       }
 
-      :host([reverse-collapse]) [slot='overflow-button'] {
+      :host([reverse-collapse]) ::slotted([slot='overflow-button']) {
         order: -1;
       }
     `;
   }
 
   // overflow container is attached to the popover overlay (different shadow root) so we need to inject styles globally
-  protected readonly _overflowContainerStyles: string = `
+  protected readonly _globalStyles: string = `
     /* Hide label on icon buttons */
     vcf-toolbar-layout vaadin-button[theme~="icon"]::part(label) {
       display: none;
     }
-  
+
+    /* Overflow container styles */
     .overflow-container {
       --overflow-container-padding: var(--lumo-space-s);
       --overflow-container-item-gap: var(--lumo-space-xs);
@@ -271,8 +273,12 @@ export class VcfToolbarLayout extends ResizeMixin(
       return;
     }
 
-    // get the overflow button
-    this._overflowButton = this.shadowRoot.querySelector('[slot="overflow-button"]') as HTMLElement;
+    // get the overflow button (or create it)
+    this._overflowButton = this.querySelector('[slot="overflow-button"]') as HTMLElement;
+    if (!this._overflowButton) {
+      this._overflowButton = this._createDefaultOverflowButton();
+      this.appendChild(this._overflowButton);
+    }
 
     // setup overflow container
     this._overflowContainer = document.createElement('vaadin-vertical-layout');
@@ -280,11 +286,7 @@ export class VcfToolbarLayout extends ResizeMixin(
 
     // setup the popover
     let popover: Popover = this.shadowRoot.querySelector('vaadin-popover') as Popover;
-    popover.setAttribute('for', 'overflow-button');
-    popover.setAttribute("overlay-role", "menu");
-    popover.setAttribute('accessible-name-ref', "overflowed menu items");
-    popover.setAttribute('position', 'bottom-start');
-    popover.setAttribute('modal', 'true');
+    popover.target = this._overflowButton;
     popover.renderer = (root: Element) => {
       // Ensure content is only added once
       if (!root.firstChild) {
@@ -297,24 +299,29 @@ export class VcfToolbarLayout extends ResizeMixin(
     setTimeout(() => this._updateOverflowingItems(), 0);
   }
 
+  protected _createDefaultOverflowButton() {
+    let button = document.createElement('vaadin-button') as Button;
+    button.setAttribute('slot', 'overflow-button');
+    button.setAttribute('part', 'overflow-button');
+    button.setAttribute('theme', 'icon');
+    button.setAttribute('aria-label', 'open menu');
+    button.innerHTML = '<vaadin-icon icon="vaadin:ellipsis-dots-v" slot="suffix"></vaadin-icon>';
+    return button;
+  }
+
   render() {
     return html`
       <slot></slot>
       <slot name="menu"></slot>
       <slot name="overflow-button"></slot>
 
-      <!-- todo: move this to be dynamically created so dev can provide their own button if desired -->
-      <vaadin-button
-        id="overflow-button"
-        part="overflow-button"
-        slot="overflow-button"
-        theme="icon"
-      >
-        <vaadin-icon icon="vaadin:ellipsis-dots-v"></vaadin-icon>
-      </vaadin-button>
       <vaadin-popover
         part="popover"
         theme="no-padding ${this.theme}"
+        modal="true"
+        position="bottom-start"
+        overlay-role="menu"
+        accessible-name-ref="overflowed menu items"
       ></vaadin-popover>
     `;
   }
@@ -410,7 +417,7 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   protected _getVisibleItems(): Element[] {
-    return Array.from(this.querySelectorAll(':scope > *'));
+    return Array.from(this.querySelectorAll(':scope > *:not([slot="overflow-button"])'));
   }      
 
   protected _getOverflowedItems(): Element[] {
@@ -466,7 +473,7 @@ export class VcfToolbarLayout extends ResizeMixin(
     
     const style = document.createElement('style');
     style.id = styleId;
-    style.textContent = this._overflowContainerStyles;
+    style.textContent = this._globalStyles;
     document.head.appendChild(style);
   }
 

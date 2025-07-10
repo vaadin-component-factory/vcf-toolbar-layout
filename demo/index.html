@@ -55,6 +55,38 @@
         </vcf-toolbar-layout>
     </div>
 
+    <h3>Custom Overflow Button</h3>
+    <p>Pass in your own button with <code>slot="overflow-button"</code>.
+    <div class="resizable-wrapper">
+        <vcf-toolbar-layout>
+            <vaadin-text-field placeholder="Search">
+                <vaadin-icon slot="suffix" icon="vaadin:search"></vaadin-icon>
+            </vaadin-text-field>
+            <hr>
+            <vaadin-button>
+                Download
+                <vaadin-icon icon="vaadin:download" slot="suffix"></vaadin-icon>
+            </vaadin-button>
+            <vaadin-button theme="icon error">
+                <vaadin-icon icon="vaadin:close" slot="prefix"></vaadin-icon>
+                Remove
+            </vaadin-button>
+            <vaadin-button theme="contrast">
+                <vaadin-icon icon="vaadin:arrow-backward" slot="prefix"></vaadin-icon>
+                Undo
+            </vaadin-button>
+            <vaadin-menu-bar theme="dropdown-indicators"></vaadin-menu-bar>
+            <a href="#">Link</a>
+            <vaadin-combo-box
+                    placeholder="Select user"
+            ></vaadin-combo-box>
+            <!-- add our custom overflow button with slot="overflow-button" -->
+            <vaadin-button slot="overflow-button" part="overflow-button" theme="primary">
+                View overflow items <vaadin-icon icon="vaadin:angle-right" slot="suffix"></vaadin-icon>
+            </vaadin-button>
+        </vcf-toolbar-layout>
+    </div>
+
     <h3>Reverse Collapse</h3>
     <p>Add attribute: <code>reverse-collapse</code></p>
     <div class="resizable-wrapper">
