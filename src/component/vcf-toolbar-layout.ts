@@ -237,6 +237,7 @@ export class VcfToolbarLayout extends ResizeMixin(
 
   protected _overflowContainer!: HTMLElement;
   protected _overflowButton!: HTMLElement;
+  protected _popover!: Popover;
   private __resizeObserver!: ResizeObserver;
   private __updateTimeout: NodeJS.Timeout | null = null;
 
@@ -274,20 +275,16 @@ export class VcfToolbarLayout extends ResizeMixin(
     }
 
     // get the overflow button (or create it)
-    this._overflowButton = this.querySelector('[slot="overflow-button"]') as HTMLElement;
-    if (!this._overflowButton) {
-      this._overflowButton = this._createDefaultOverflowButton();
-      this.appendChild(this._overflowButton);
-    }
+    this._overflowButton = this._findOrCreateOverflowButton();
 
     // setup overflow container
     this._overflowContainer = document.createElement('vaadin-vertical-layout');
     this._overflowContainer.classList.add('overflow-container');
 
     // setup the popover
-    let popover: Popover = this.shadowRoot.querySelector('vaadin-popover') as Popover;
-    popover.target = this._overflowButton;
-    popover.renderer = (root: Element) => {
+    this._popover = this.shadowRoot.querySelector('vaadin-popover') as Popover;
+    this._popover.target = this._overflowButton;
+    this._popover.renderer = (root: Element) => {
       // Ensure content is only added once
       if (!root.firstChild) {
         root.appendChild(this._overflowContainer!);
@@ -297,6 +294,18 @@ export class VcfToolbarLayout extends ResizeMixin(
     // process overflow items to set initial state
     // for some reason, button width is ignored unless we need to wait for the next frame
     setTimeout(() => this._updateOverflowingItems(), 0);
+  }
+
+  protected _findOrCreateOverflowButton() {
+    let button = this.querySelector('[slot="overflow-button"]') as HTMLElement;
+
+    // create default overflow button if not found
+    if (!button) {
+      button = this._createDefaultOverflowButton();
+      this.appendChild(button);
+    }
+
+    return button;
   }
 
   protected _createDefaultOverflowButton() {
@@ -313,7 +322,9 @@ export class VcfToolbarLayout extends ResizeMixin(
     return html`
       <slot></slot>
       <slot name="menu"></slot>
-      <slot name="overflow-button"></slot>
+      <slot name="overflow-button"
+          @slotchange="${this._onOverflowButtonSlotChange}">
+      </slot>
 
       <vaadin-popover
         part="popover"
@@ -324,6 +335,22 @@ export class VcfToolbarLayout extends ResizeMixin(
         accessible-name-ref="overflowed menu items"
       ></vaadin-popover>
     `;
+  }
+
+  /**
+   * Fired when the overflow button slot changes. This is likely because 
+   * a new overflow button was added or the existing one was removed.
+   * @param e 
+   */
+  protected _onOverflowButtonSlotChange(e: Event) {
+    // update our reference to new overflow button
+    this._overflowButton = this._findOrCreateOverflowButton();
+
+    // update the popover target to the new overflow button
+    this._popover.target = this._overflowButton;
+
+    // depending on the state of the overflow items, we may need to the new button to immediately be visible
+    this._updateOverflowButtonState();
   }
 
   /**
