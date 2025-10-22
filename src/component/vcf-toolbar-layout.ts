@@ -280,16 +280,12 @@ export class VcfToolbarLayout extends ResizeMixin(
     // setup overflow container
     this._overflowContainer = document.createElement('vaadin-vertical-layout');
     this._overflowContainer.classList.add('overflow-container');
+    this._overflowContainer.slot = "overflow-content";
+    this.append(this._overflowContainer);
 
     // setup the popover
     this._popover = this.shadowRoot.querySelector('vaadin-popover') as Popover;
     this._popover.target = this._overflowButton;
-    this._popover.renderer = (root: Element) => {
-      // Ensure content is only added once
-      if (!root.firstChild) {
-        root.appendChild(this._overflowContainer!);
-      }
-    };
 
     // process overflow items to set initial state
     // for some reason, button width is ignored unless we need to wait for the next frame
@@ -333,7 +329,9 @@ export class VcfToolbarLayout extends ResizeMixin(
         position="bottom-start"
         overlay-role="menu"
         accessible-name-ref="overflowed menu items"
-      ></vaadin-popover>
+      >
+        <slot name="overflow-content"></slot>
+      </vaadin-popover>
     `;
   }
 
@@ -444,7 +442,7 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   protected _getVisibleItems(): Element[] {
-    return Array.from(this.querySelectorAll(':scope > *:not([slot="overflow-button"])'));
+    return Array.from(this.querySelectorAll(':scope > *:not([slot])'));
   }      
 
   protected _getOverflowedItems(): Element[] {
