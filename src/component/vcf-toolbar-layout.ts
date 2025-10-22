@@ -71,15 +71,16 @@ export class VcfToolbarLayout extends ResizeMixin(
     `;
   }
 
-  // overflow container is attached to the popover overlay (different shadow root) so we need to inject styles globally
+  // some nested selectors can not be solved with using ::slotted from the shadow root
+  // so we need to inject global styles for those parts
   protected readonly _globalStyles: string = `
     /* Hide label on icon buttons */
-    vcf-toolbar-layout vaadin-button[theme~="icon"]::part(label) {
+    vcf-toolbar-layout > vaadin-button[theme~="icon"]::part(label) {
       display: none;
     }
 
     /* Overflow container styles */
-    .overflow-container {
+    vcf-toolbar-layout > .overflow-container {
       --overflow-container-padding: var(--lumo-space-s);
       --overflow-container-item-gap: var(--lumo-space-xs);
       --overflow-container-text-color: var(--lumo-body-text-color);
@@ -95,12 +96,12 @@ export class VcfToolbarLayout extends ResizeMixin(
       padding: var(--overflow-container-padding);
     }
     
-    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container {
+    vcf-toolbar-layout[theme~="fixed-width-prefix"] .overflow-container {
       --overflow-container-prefix-width: var(--lumo-space-l);
     }
 
     /* native element styles */
-    vcf-toolbar-layout  hr {
+    vcf-toolbar-layout > hr {
       display: inline-block;
       flex-shrink: 0;
       align-self: stretch;
@@ -111,18 +112,18 @@ export class VcfToolbarLayout extends ResizeMixin(
       margin: var(--lumo-space-xs);
     }
     
-    vcf-toolbar-layout hr:last-child {
+    vcf-toolbar-layout > hr:last-child {
       visibility: hidden;
       margin: 0;
       margin-right: calc(-1 * var(--vcf-toolbar-layout-gap));
       width: 0;
     }
     
-    .overflow-container > hr:first-child {
+    vcf-toolbar-layout > .overflow-container > hr:first-child {
       display: none;
     }
 
-    .overflow-container > hr {
+    vcf-toolbar-layout > .overflow-container > hr {
       border: none;
       background-color: var(--lumo-contrast-10pct);
       margin: 0;
@@ -130,23 +131,23 @@ export class VcfToolbarLayout extends ResizeMixin(
       width: 100%;
     }
 
-    .overflow-container > a {
+    vcf-toolbar-layout > .overflow-container > a {
       display: flex;
       align-items: center;
     }
 
     /* vaadin component styles */
     
-    :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
-    :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix) {
+    vcf-toolbar-layout > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
+    vcf-toolbar-layout > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix) {
       color: var(--overflow-container-prefix-suffix-color);
     }
     
-    .overflow-container > [has-label]:first-child {
+    vcf-toolbar-layout > .overflow-container > [has-label]:first-child {
       padding-top: 0;
     }
     
-    .overflow-container > [has-label] {
+    vcf-toolbar-layout > .overflow-container > [has-label] {
       padding-top: var(--lumo-space-s);
     }
     
@@ -154,66 +155,66 @@ export class VcfToolbarLayout extends ResizeMixin(
       width: unset !important;
     }
 
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
+    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
       justify-content: left;
     }
 
-    .overflow-container > vaadin-button,
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
+    vcf-toolbar-layout > .overflow-container > vaadin-button,
+    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
       --vaadin-button-padding: var(--lumo-space-s);
       --vaadin-button-margin: 0px;
     }
     
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
+    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
       width: unset !important;
       flex: 1;
     }
     
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
+    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
       width: 100%;
     }
     
-    .overflow-container > vaadin-button[theme~="primary"] {
+    vcf-toolbar-layout > .overflow-container > vaadin-button[theme~="primary"] {
       background: var(--vaadin-button-background);
       color: var(--lumo-primary-text-color);
       font-weight: var(--vaadin-button-font-weight);
     }
     
-    .overflow-container > vaadin-button[theme~="icon"]::part(prefix) {
+    vcf-toolbar-layout > .overflow-container > vaadin-button[theme~="icon"]::part(prefix) {
       margin-left: -0.25em;
       margin-right: 0.25em;
     }
     
     /* Theme variant to hide prefix & suffix in overflow container */
-    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-button::part(prefix),
-    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-button::part(suffix),
-    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix),
-    vaadin-popover-overlay[theme~="hide-icons"] .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(suffix) {
+    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-button::part(prefix),
+    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-button::part(suffix),
+    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix),
+    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(suffix) {
       display: none;
     }
 
-    .overflow-container > vaadin-button::part(label),
-    .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(label) {
+    vcf-toolbar-layout > .overflow-container > vaadin-button::part(label),
+    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(label) {
       text-align: left;
       flex-grow: 1;
     }
     
-    .overflow-container > ::part(input-field) {
+    vcf-toolbar-layout > .overflow-container > ::part(input-field) {
       padding: 0 var(--lumo-space-xs);
     }
     
-    .overflow-container > a {
+    vcf-toolbar-layout > .overflow-container > a {
       padding: 0 var(--lumo-space-s);
       height: var(--lumo-size-m);
     }
     
     /* Theme variant forcing horizonal alignment of prefixes */
-    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container > vaadin-button::part(prefix),
-    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix) {
+    vcf-toolbar-layout[theme~="fixed-width-prefix"] > .overflow-container > vaadin-button::part(prefix),
+    vcf-toolbar-layout[theme~="fixed-width-prefix"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix) {
       width: var(--overflow-container-prefix-width);
     }
     
-    vaadin-popover-overlay[theme~="fixed-width-prefix"] .overflow-container > a {
+    vcf-toolbar-layout[theme~="fixed-width-prefix"] > .overflow-container > a {
       padding-left: calc(var(--lumo-space-s) + 0.2em + var(--overflow-container-prefix-width, 0px));
     }
   `;
