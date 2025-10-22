@@ -6,4 +6,4 @@ import '@vaadin/menu-bar';
 import '@vaadin/icon';
 import '@vaadin/icons';
 import '@vaadin/text-field';
-
+import '@vaadin/vaadin-lumo-styles/icons.js';
