@@ -22,6 +22,8 @@ import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mix
 import { ElementMixin } from '@vaadin/component-base/src/element-mixin.js';
 import { PolylitMixin } from '@vaadin/component-base/src/polylit-mixin.js';
 import { ResizeMixin } from '@vaadin/component-base/src/resize-mixin.js';
+import { SlotStylesMixin } from '@vaadin/component-base/src/slot-styles-mixin.js';
+import { ThemeDetectionMixin } from '@vaadin/vaadin-themable-mixin/vaadin-theme-detection-mixin.js';
 import '@vaadin/button';
 import '@vaadin/popover';
 import '@vaadin/vertical-layout';
@@ -30,9 +32,8 @@ import { Button } from '@vaadin/button';
 
 @customElement('vcf-toolbar-layout')
 export class VcfToolbarLayout extends ResizeMixin(
-  ElementMixin(ThemableMixin(PolylitMixin(LitElement)))
+  ElementMixin(SlotStylesMixin(ThemeDetectionMixin(PolylitMixin(LitElement))))
 ) {
-
   static get is() {
     return 'vcf-toolbar-layout';
   }
@@ -71,153 +72,168 @@ export class VcfToolbarLayout extends ResizeMixin(
     `;
   }
 
-  // some nested selectors can not be solved with using ::slotted from the shadow root
-  // so we need to inject global styles for those parts
-  protected readonly _globalStyles: string = `
-    /* Hide label on icon buttons */
-    vcf-toolbar-layout > vaadin-button[theme~="icon"]::part(label) {
-      display: none;
-    }
+  // @ts-expect-error overriding property from `SlotStylesMixinClass`
+  override get slotStyles(): string[] {
+    const tag = this.localName;
+    const lumo = '[data-application-theme="lumo"]';
 
-    /* Overflow container styles */
-    vcf-toolbar-layout > .overflow-container {
-      --overflow-container-padding: var(--lumo-space-s);
-      --overflow-container-item-gap: var(--lumo-space-xs);
-      --overflow-container-text-color: var(--lumo-body-text-color);
-      --overflow-container-prefix-suffix-color: var(--lumo-tertiary-text-color);
+    // some nested selectors can not be solved with using ::slotted from the shadow root
+    // so we need to inject global styles for those parts
+    return [
+      `
+      /* Hide label on icon buttons */
+      ${tag} > vaadin-button[theme~="icon"]::part(label) {
+        display: none;
+      }
 
-      /* vaadin component overrides */
-      --vaadin-button-background: transparent;
-      --vaadin-button-text-color: var(--lumo-body-text-color);
-      --vaadin-button-font-weight: 400;
+      /* Overflow container styles */
+      ${tag} > .overflow-container {
+        align-items: stretch;
+        gap: var(--overflow-container-item-gap);
+        padding: var(--overflow-container-padding);
+      }
 
-      align-items: stretch;
-      gap: var(--overflow-container-item-gap);
-      padding: var(--overflow-container-padding);
-    }
-    
-    vcf-toolbar-layout[theme~="fixed-width-prefix"] .overflow-container {
-      --overflow-container-prefix-width: var(--lumo-space-l);
-    }
+      ${tag}${lumo} > .overflow-container {
+        --overflow-container-padding: var(--lumo-space-s);
+        --overflow-container-item-gap: var(--lumo-space-xs);
+        --overflow-container-text-color: var(--lumo-body-text-color);
+        --overflow-container-prefix-suffix-color: var(--lumo-tertiary-text-color);
 
-    /* native element styles */
-    vcf-toolbar-layout > hr {
-      display: inline-block;
-      flex-shrink: 0;
-      align-self: stretch;
-      width: 1px;
-      height: auto;
-      border: none;
-      background-color: var(--lumo-contrast-10pct);
-      margin: var(--lumo-space-xs);
-    }
-    
-    vcf-toolbar-layout > hr:last-child {
-      visibility: hidden;
-      margin: 0;
-      margin-right: calc(-1 * var(--vcf-toolbar-layout-gap));
-      width: 0;
-    }
-    
-    vcf-toolbar-layout > .overflow-container > hr:first-child {
-      display: none;
-    }
+        /* vaadin component overrides */
+        --vaadin-button-background: transparent;
+        --vaadin-button-text-color: var(--lumo-body-text-color);
+        --vaadin-button-font-weight: 400;
+      }
 
-    vcf-toolbar-layout > .overflow-container > hr {
-      border: none;
-      background-color: var(--lumo-contrast-10pct);
-      margin: 0;
-      height: 1px;
-      width: 100%;
-    }
+      ${tag}${lumo}[theme~="fixed-width-prefix"] .overflow-container {
+        --overflow-container-prefix-width: var(--lumo-space-l);
+      }
 
-    vcf-toolbar-layout > .overflow-container > a {
-      display: flex;
-      align-items: center;
-    }
+      /* native element styles */
+      ${tag} > hr {
+        display: inline-block;
+        flex-shrink: 0;
+        align-self: stretch;
+        width: 1px;
+        height: auto;
+        border: none;
+        background-color: var(--lumo-contrast-10pct);
+        margin: var(--lumo-space-xs);
+      }
 
-    /* vaadin component styles */
-    
-    vcf-toolbar-layout > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
-    vcf-toolbar-layout > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix) {
-      color: var(--overflow-container-prefix-suffix-color);
-    }
-    
-    vcf-toolbar-layout > .overflow-container > [has-label]:first-child {
-      padding-top: 0;
-    }
-    
-    vcf-toolbar-layout > .overflow-container > [has-label] {
-      padding-top: var(--lumo-space-s);
-    }
-    
-    vcf-toolbar-layout > vaadin-menu-bar > vaadin-menu-bar-button {
-      width: unset !important;
-    }
+      ${tag}${lumo} > hr {
+        background-color: var(--lumo-contrast-10pct);
+        margin: var(--lumo-space-xs);
+      }
 
-    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
-      justify-content: left;
-    }
+      ${tag} > hr:last-child {
+        visibility: hidden;
+        margin: 0;
+        margin-right: calc(-1 * var(--vcf-toolbar-layout-gap));
+        width: 0;
+      }
 
-    vcf-toolbar-layout > .overflow-container > vaadin-button,
-    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
-      --vaadin-button-padding: var(--lumo-space-s);
-      --vaadin-button-margin: 0px;
-    }
-    
-    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
-      width: unset !important;
-      flex: 1;
-    }
-    
-    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
-      width: 100%;
-    }
-    
-    vcf-toolbar-layout > .overflow-container > vaadin-button[theme~="primary"] {
-      background: var(--vaadin-button-background);
-      color: var(--lumo-primary-text-color);
-      font-weight: var(--vaadin-button-font-weight);
-    }
-    
-    vcf-toolbar-layout > .overflow-container > vaadin-button[theme~="icon"]::part(prefix) {
-      margin-left: -0.25em;
-      margin-right: 0.25em;
-    }
-    
-    /* Theme variant to hide prefix & suffix in overflow container */
-    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-button::part(prefix),
-    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-button::part(suffix),
-    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix),
-    vcf-toolbar-layout[theme~="hide-icons"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(suffix) {
-      display: none;
-    }
+      ${tag} > .overflow-container > hr:first-child {
+        display: none;
+      }
 
-    vcf-toolbar-layout > .overflow-container > vaadin-button::part(label),
-    vcf-toolbar-layout > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(label) {
-      text-align: left;
-      flex-grow: 1;
-    }
-    
-    vcf-toolbar-layout > .overflow-container > ::part(input-field) {
-      padding: 0 var(--lumo-space-xs);
-    }
-    
-    vcf-toolbar-layout > .overflow-container > a {
-      padding: 0 var(--lumo-space-s);
-      height: var(--lumo-size-m);
-    }
-    
-    /* Theme variant forcing horizonal alignment of prefixes */
-    vcf-toolbar-layout[theme~="fixed-width-prefix"] > .overflow-container > vaadin-button::part(prefix),
-    vcf-toolbar-layout[theme~="fixed-width-prefix"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix) {
-      width: var(--overflow-container-prefix-width);
-    }
-    
-    vcf-toolbar-layout[theme~="fixed-width-prefix"] > .overflow-container > a {
-      padding-left: calc(var(--lumo-space-s) + 0.2em + var(--overflow-container-prefix-width, 0px));
-    }
-  `;
+      ${tag} > .overflow-container > hr {
+        border: none;
+        background-color: var(--lumo-contrast-10pct);
+        margin: 0;
+        height: 1px;
+        width: 100%;
+      }
+
+      ${tag} > .overflow-container > a {
+        display: flex;
+        align-items: center;
+      }
+
+      /* vaadin component styles */
+
+      ${tag} > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
+      ${tag} > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix) {
+        color: var(--overflow-container-prefix-suffix-color);
+      }
+
+      ${tag} > .overflow-container > [has-label]:first-child {
+        padding-top: 0;
+      }
+
+      ${tag}${lumo} > .overflow-container > [has-label] {
+        padding-top: var(--lumo-space-s);
+      }
+
+      ${tag} > vaadin-menu-bar > vaadin-menu-bar-button {
+        width: unset !important;
+      }
+
+      ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
+        justify-content: left;
+      }
+
+      ${tag}${lumo} > .overflow-container > vaadin-button,
+      ${tag}${lumo} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
+        --vaadin-button-padding: var(--lumo-space-s);
+        --vaadin-button-margin: 0px;
+      }
+
+      ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button {
+        width: unset !important;
+        flex: 1;
+      }
+
+      ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
+        width: 100%;
+      }
+
+      ${tag}${lumo} > .overflow-container > vaadin-button[theme~="primary"] {
+        background: var(--vaadin-button-background);
+        color: var(--lumo-primary-text-color);
+        font-weight: var(--vaadin-button-font-weight);
+      }
+
+      ${tag} > .overflow-container > vaadin-button[theme~="icon"]::part(prefix) {
+        margin-left: -0.25em;
+        margin-right: 0.25em;
+      }
+
+      /* Theme variant to hide prefix & suffix in overflow container */
+      ${tag}[theme~="hide-icons"] > .overflow-container > vaadin-button::part(prefix),
+      ${tag}[theme~="hide-icons"] > .overflow-container > vaadin-button::part(suffix),
+      ${tag}[theme~="hide-icons"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix),
+      ${tag}[theme~="hide-icons"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(suffix) {
+        display: none;
+      }
+
+      ${tag} > .overflow-container > vaadin-button::part(label),
+      ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(label) {
+        text-align: left;
+        flex-grow: 1;
+      }
+
+      ${tag}${lumo} > .overflow-container > ::part(input-field) {
+        padding: 0 var(--lumo-space-xs);
+      }
+
+      ${tag}${lumo} > .overflow-container > a {
+        padding: 0 var(--lumo-space-s);
+        height: var(--lumo-size-m);
+      }
+
+      /* Theme variant forcing horizontal alignment of prefixes */
+      ${tag}[theme~="fixed-width-prefix"] > .overflow-container > vaadin-button::part(prefix),
+      ${tag}[theme~="fixed-width-prefix"] > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button::part(prefix) {
+        width: var(--overflow-container-prefix-width);
+      }
+
+      ${tag}${lumo}[theme~="fixed-width-prefix"] > .overflow-container > a {
+        padding-left: calc(var(--lumo-space-s) + 0.2em + var(--overflow-container-prefix-width, 0px));
+      }
+    `,
+    ];
+  }
 
   @property({ type: String, reflect: true })
   theme: string | null = null;
@@ -245,19 +261,15 @@ export class VcfToolbarLayout extends ResizeMixin(
   connectedCallback(): void {
     super.connectedCallback();
 
-    // inject global styles for the overflow container since it will be moved to a different shadow root (popover overlay)
-    this._injectGlobalStyles();
-
     // listen for resize events
-    this.__resizeObserver = new ResizeObserver(this._requestOverflowUpdate.bind(this));
+    this.__resizeObserver = new ResizeObserver(
+      this._requestOverflowUpdate.bind(this)
+    );
     this.__resizeObserver.observe(this);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-
-    // remove global styles
-    this._removeGlobalStyles();
 
     // remove resize observer
     this.__resizeObserver.disconnect();
@@ -281,7 +293,7 @@ export class VcfToolbarLayout extends ResizeMixin(
     // setup overflow container
     this._overflowContainer = document.createElement('vaadin-vertical-layout');
     this._overflowContainer.classList.add('overflow-container');
-    this._overflowContainer.slot = "overflow-content";
+    this._overflowContainer.slot = 'overflow-content';
     this.append(this._overflowContainer);
 
     // setup the popover
@@ -311,7 +323,8 @@ export class VcfToolbarLayout extends ResizeMixin(
     button.setAttribute('part', 'overflow-button');
     button.setAttribute('theme', 'icon');
     button.setAttribute('aria-label', 'open menu');
-    button.innerHTML = '<vaadin-icon icon="vaadin:ellipsis-dots-v" slot="suffix"></vaadin-icon>';
+    button.innerHTML =
+      '<vaadin-icon icon="vaadin:ellipsis-dots-v" slot="suffix"></vaadin-icon>';
     return button;
   }
 
@@ -319,8 +332,10 @@ export class VcfToolbarLayout extends ResizeMixin(
     return html`
       <slot></slot>
       <slot name="menu"></slot>
-      <slot name="overflow-button"
-          @slotchange="${this._onOverflowButtonSlotChange}">
+      <slot
+        name="overflow-button"
+        @slotchange="${this._onOverflowButtonSlotChange}"
+      >
       </slot>
 
       <vaadin-popover
@@ -337,9 +352,9 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   /**
-   * Fired when the overflow button slot changes. This is likely because 
+   * Fired when the overflow button slot changes. This is likely because
    * a new overflow button was added or the existing one was removed.
-   * @param e 
+   * @param e
    */
   protected _onOverflowButtonSlotChange(e: Event) {
     // update our reference to new overflow button
@@ -359,7 +374,10 @@ export class VcfToolbarLayout extends ResizeMixin(
     if (this.__updateTimeout) {
       clearTimeout(this.__updateTimeout);
     }
-    this.__updateTimeout = setTimeout(() => this._updateOverflowingItems(), this.updateDebounceDelay);
+    this.__updateTimeout = setTimeout(
+      () => this._updateOverflowingItems(),
+      this.updateDebounceDelay
+    );
   }
 
   /**
@@ -368,32 +386,51 @@ export class VcfToolbarLayout extends ResizeMixin(
    * Elements in the overflow container are hidden and only shown when the overflow button is clicked.
    */
   protected _updateOverflowingItems() {
-
     // todo: include container gap/padding/etc value in calculation?
-    const overflowButtonWidth = this._overflowButton ? this._overflowButton.getBoundingClientRect().width : 0;
+    const overflowButtonWidth = this._overflowButton
+      ? this._overflowButton.getBoundingClientRect().width
+      : 0;
 
     const visibleItems = this._getVisibleItems();
-    const lastVisibleItem = visibleItems.length > 0 ? visibleItems[visibleItems.length - 1] : null;
+    const lastVisibleItem =
+      visibleItems.length > 0 ? visibleItems[visibleItems.length - 1] : null;
 
     const overflowedItems = this._getOverflowedItems();
 
     // if the right-most item is visible in the container, then we might need to move overflow items back into the main container
-    if (!lastVisibleItem || this._isElementVisibleInContainer(lastVisibleItem, this, overflowButtonWidth)) {
+    if (
+      !lastVisibleItem ||
+      this._isElementVisibleInContainer(
+        lastVisibleItem,
+        this,
+        overflowButtonWidth
+      )
+    ) {
       while (overflowedItems.length > 0) {
         // temporarily move the item to the main container, then check for clipping
-        let overflowedItem = this.reverseCollapse ? overflowedItems[overflowedItems.length - 1] : overflowedItems[0];
+        let overflowedItem = this.reverseCollapse
+          ? overflowedItems[overflowedItems.length - 1]
+          : overflowedItems[0];
         this._moveItemToMainContainer(overflowedItem);
 
         // check the right-most visible item for clipping
         const updatedVisibleItems = this._getVisibleItems(); // <-- not optimal, but we need to get the updated list of visible items
-        let lastItem = this.reverseCollapse ? updatedVisibleItems[updatedVisibleItems.length - 1] : overflowedItem;
-        if (!this._isElementVisibleInContainer(lastItem, this, overflowButtonWidth)) {
+        let lastItem = this.reverseCollapse
+          ? updatedVisibleItems[updatedVisibleItems.length - 1]
+          : overflowedItem;
+        if (
+          !this._isElementVisibleInContainer(
+            lastItem,
+            this,
+            overflowButtonWidth
+          )
+        ) {
           this._moveItemToOverflowContainer(overflowedItem);
           break;
         }
 
         // remove from the overflowed items
-        overflowedItems.splice(overflowedItems.indexOf(overflowedItem), 1); 
+        overflowedItems.splice(overflowedItems.indexOf(overflowedItem), 1);
       }
     } else {
       // move items from the main container to the overflow container if they are clipped
@@ -401,9 +438,12 @@ export class VcfToolbarLayout extends ResizeMixin(
       while (visibleItems.length > 0) {
         let item = visibleItems[visibleItems.length - 1];
 
-        // normally we need to add the overflow button width, since the button sits to the right of the items, 
+        // normally we need to add the overflow button width, since the button sits to the right of the items,
         // but in reverse collapse mode, if the button is visible, it is on the left so we don't need to add its width
-        const extraSpaceRequired = (this.reverseCollapse && this._isOverflowButtonVisible()) ? 0 : overflowButtonWidth;
+        const extraSpaceRequired =
+          this.reverseCollapse && this._isOverflowButtonVisible()
+            ? 0
+            : overflowButtonWidth;
         if (this._isElementVisibleInContainer(item, this, extraSpaceRequired)) {
           break;
         }
@@ -425,26 +465,30 @@ export class VcfToolbarLayout extends ResizeMixin(
 
   /**
    * Check if the element is visible in the container.
-   * @param element 
-   * @param container 
-   * @param extraSpaceRequired 
-   * @returns 
+   * @param element
+   * @param container
+   * @param extraSpaceRequired
+   * @returns
    */
-  protected _isElementVisibleInContainer(element: Element, container: Element, extraSpaceRequired: number = 0): boolean {
+  protected _isElementVisibleInContainer(
+    element: Element,
+    container: Element,
+    extraSpaceRequired: number = 0
+  ): boolean {
     const elementRect = element.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
-  
+
     return (
       // elementRect.top >= containerRect.top &&
       // elementRect.left >= containerRect.left &&
       // elementRect.bottom <= containerRect.bottom &&
-      (elementRect.right + extraSpaceRequired) <= containerRect.right
+      elementRect.right + extraSpaceRequired <= containerRect.right
     );
   }
 
   protected _getVisibleItems(): Element[] {
     return Array.from(this.querySelectorAll(':scope > *:not([slot])'));
-  }      
+  }
 
   protected _getOverflowedItems(): Element[] {
     return Array.from(this._overflowContainer.querySelectorAll(':scope > *'));
@@ -458,17 +502,20 @@ export class VcfToolbarLayout extends ResizeMixin(
       this._overflowContainer.appendChild(item);
     } else {
       // must insert at beginning of overflow container to ensure order stays consistent with normal menu
-      this._overflowContainer.insertBefore(item, this._overflowContainer.firstChild);
+      this._overflowContainer.insertBefore(
+        item,
+        this._overflowContainer.firstChild
+      );
     }
   }
 
   protected _moveItemToMainContainer(item: Element) {
     item.remove();
-    
+
     if (this.reverseCollapse) {
       // if reverse collapse mode, we need to insert at the beginning of the main container
       this.insertBefore(item, this.children[0]);
-    }  else {
+    } else {
       // must insert at end of main container to ensure order stays consistent with normal menu
       this.appendChild(item);
     }
@@ -487,27 +534,5 @@ export class VcfToolbarLayout extends ResizeMixin(
 
   protected _isOverflowButtonVisible(): boolean {
     return this._overflowButton.classList.contains('visible');
-  }
-
-  protected _injectGlobalStyles() {
-    const styleId = 'overflow-container-styles';
-
-    // avoid injecting duplicates
-    if (document.getElementById(styleId)) {
-      return;
-    }
-    
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = this._globalStyles;
-    document.head.appendChild(style);
-  }
-
-  protected _removeGlobalStyles() {
-    const styleId = 'overflow-container-styles';
-    const style = document.getElementById(styleId);
-    if (style) {
-      style.remove();
-    }
   }
 }
