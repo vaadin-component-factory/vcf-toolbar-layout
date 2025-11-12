@@ -282,11 +282,6 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   protected firstUpdated() {
-    if (!this.shadowRoot) {
-      console.error('Shadow root not found');
-      return;
-    }
-
     // get the overflow button (or create it)
     this._overflowButton = this._findOrCreateOverflowButton();
 
@@ -297,7 +292,7 @@ export class VcfToolbarLayout extends ResizeMixin(
     this.append(this._overflowContainer);
 
     // setup the popover
-    this._popover = this.shadowRoot.querySelector('vaadin-popover') as Popover;
+    this._popover = this.shadowRoot!.querySelector('vaadin-popover') as Popover;
     this._popover.target = this._overflowButton;
 
     // process overflow items to set initial state
