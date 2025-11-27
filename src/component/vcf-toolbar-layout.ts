@@ -65,10 +65,6 @@ export class VcfToolbarLayout extends ResizeMixin(
       ::slotted([slot="overflow-button"].visible) {
         display: initial;
       }
-
-      :host([reverse-collapse]) ::slotted([slot='overflow-button']) {
-        order: -1;
-      }
     `;
   }
 
@@ -126,6 +122,7 @@ export class VcfToolbarLayout extends ResizeMixin(
         margin: var(--lumo-space-xs);
       }
 
+      ${tag} > hr:first-child,
       ${tag} > hr:last-child {
         visibility: hidden;
         margin: 0;
@@ -133,7 +130,8 @@ export class VcfToolbarLayout extends ResizeMixin(
         width: 0;
       }
 
-      ${tag} > .overflow-container > hr:first-child {
+      ${tag} > .overflow-container > hr:first-child,
+      ${tag} > .overflow-container > hr:last-child {
         display: none;
       }
 
@@ -150,12 +148,7 @@ export class VcfToolbarLayout extends ResizeMixin(
         align-items: center;
       }
 
-      /* vaadin component styles */
-
-      ${tag} > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
-      ${tag} > :not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix) {
-        color: var(--overflow-container-prefix-suffix-color);
-      }
+      /* Vaadin component styles */
 
       ${tag} > .overflow-container > [has-label]:first-child {
         padding-top: 0;
@@ -164,9 +157,28 @@ export class VcfToolbarLayout extends ResizeMixin(
       ${tag}${lumo} > .overflow-container > [has-label] {
         padding-top: var(--lumo-space-s);
       }
+      
+      ${tag} > .overflow-container > vaadin-button,
+      ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button,
+      ${tag} > .overflow-container > *::part(input-field) {
+        outline-offset: calc(var(--vaadin-focus-ring-width) * -1);
+      }
+      
+      ${tag} > .overflow-container > vaadin-button:not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
+      ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button:not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(prefix),
+      ${tag} > .overflow-container > vaadin-button:not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix),
+      ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button:not([theme~="error"]):not([theme~="success"]):not([theme~="warning"])::part(suffix) {
+        color: var(--overflow-container-prefix-suffix-color);
+      }
 
       ${tag} > vaadin-menu-bar > vaadin-menu-bar-button {
         width: unset !important;
+      }
+      
+      ${tag} > .overflow-container vaadin-menu-bar::part(container) {
+        padding: 0;
+        margin: 0;
+        overflow: visible;
       }
 
       ${tag} > .overflow-container > vaadin-menu-bar > vaadin-menu-bar-button > vaadin-menu-bar-item {
