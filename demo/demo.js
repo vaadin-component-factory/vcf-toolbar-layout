@@ -1,4 +1,3 @@
-import '../dist/src/theme/lumo/vcf-toolbar-layout.js';
 import '@vaadin/button';
 import '@vaadin/date-picker';
 import '@vaadin/combo-box';
