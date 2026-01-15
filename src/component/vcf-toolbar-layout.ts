@@ -54,7 +54,7 @@ export class VcfToolbarLayout extends ResizeMixin(
         overflow: visible;      /* Ensure the popover can overflow the host */
         contain: layout;
         width: 100%;
-        gap: var(--vcf-toolbar-layout-gap););
+        gap: var(--vcf-toolbar-layout-gap);
       }
 
       ::slotted([slot="overflow-button"]) {
