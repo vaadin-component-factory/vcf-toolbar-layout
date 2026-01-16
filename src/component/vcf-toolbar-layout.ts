@@ -45,7 +45,7 @@ export class VcfToolbarLayout extends ResizeMixin(
     return css`
       :host {
         --vcf-toolbar-align-items: baseline;
-        --vcf-toolbar-layout-gap: var(--lumo-space-s);
+        --vcf-toolbar-layout-gap: var(--vaadin-space-s);
 
         display: flex;
         align-items: var(--vcf-toolbar-align-items);
@@ -63,6 +63,10 @@ export class VcfToolbarLayout extends ResizeMixin(
 
       ::slotted([slot="overflow-button"].visible) {
         display: initial;
+      }
+
+      :host([data-application-theme='lumo']) {
+        --vcf-toolbar-layout-gap: var(--lumo-space-s);
       }
     `;
   }
