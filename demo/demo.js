@@ -1,3 +1,4 @@
+import '../dist/src/vcf-toolbar-layout.js';
 import '@vaadin/button';
 import '@vaadin/date-picker';
 import '@vaadin/combo-box';
