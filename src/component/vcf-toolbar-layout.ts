@@ -45,7 +45,7 @@ export class VcfToolbarLayout extends ResizeMixin(
     return css`
       :host {
         --vcf-toolbar-align-items: baseline;
-        --vcf-toolbar-layout-gap: var(--vaadin-space-s);
+        --vcf-toolbar-layout-gap: var(--vaadin-gap-xs);
 
         display: flex;
         align-items: var(--vcf-toolbar-align-items);
@@ -87,6 +87,9 @@ export class VcfToolbarLayout extends ResizeMixin(
 
       /* Overflow container styles */
       ${tag} > .overflow-container {
+        --overflow-container-padding: var(--vaadin-padding-xs);
+        --overflow-container-item-gap: var(--vaadin-gap-xs);
+      
         align-items: stretch;
         gap: var(--overflow-container-item-gap);
         padding: var(--overflow-container-padding);
@@ -116,8 +119,8 @@ export class VcfToolbarLayout extends ResizeMixin(
         width: 1px;
         height: auto;
         border: none;
-        background-color: var(--lumo-contrast-10pct);
-        margin: var(--lumo-space-xs);
+        background-color: var(--vaadin-border-color-secondary);
+        margin: var(--vaadin-gap-xs);
       }
 
       ${tag}${lumo} > hr {
@@ -140,10 +143,14 @@ export class VcfToolbarLayout extends ResizeMixin(
 
       ${tag} > .overflow-container > hr {
         border: none;
-        background-color: var(--lumo-contrast-10pct);
+        background-color: var(--vaadin-border-color-secondary);
         margin: 0;
         height: 1px;
         width: 100%;
+      }
+      
+      ${tag}${lumo} > .overflow-container > hr {
+        background-color: var(--lumo-contrast-10pct);
       }
 
       ${tag} > .overflow-container > a {
@@ -176,6 +183,11 @@ export class VcfToolbarLayout extends ResizeMixin(
 
       ${tag} > vaadin-menu-bar > vaadin-menu-bar-button {
         width: unset !important;
+      }
+      
+      /* Workaround for https://github.com/vaadin/web-components/issues/11033 */
+      ${tag} > vaadin-menu-bar::part(container) {
+        contain: none;
       }
       
       ${tag} > .overflow-container vaadin-menu-bar::part(container) {
