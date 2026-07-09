@@ -57,14 +57,6 @@ export class VcfToolbarLayout extends ResizeMixin(
         gap: var(--vcf-toolbar-layout-gap);
       }
 
-      ::slotted([slot="overflow-button"]) {
-        display: none;
-      }
-
-      ::slotted([slot="overflow-button"].visible) {
-        display: initial;
-      }
-
       :host([data-application-theme='lumo']) {
         --vcf-toolbar-layout-gap: var(--lumo-space-s);
       }
@@ -83,6 +75,15 @@ export class VcfToolbarLayout extends ResizeMixin(
       /* Hide label on icon buttons */
       ${tag} > vaadin-button[theme~="icon"]::part(label) {
         display: none;
+      }
+
+      /* Overflow button visibility */
+      ${tag} vaadin-button[slot="overflow-button"] {
+        display: none;
+      }
+        
+      ${tag} vaadin-button[slot="overflow-button"].visible {
+        display: initial;
       }
 
       /* Overflow container styles */
