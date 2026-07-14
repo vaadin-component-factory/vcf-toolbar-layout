@@ -38,7 +38,7 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   static get version() {
-    return '2.0.2';
+    return '2.0.3';
   }
 
   static get styles() {
