@@ -42,6 +42,7 @@
     "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\""
   },
   "dependencies": {
+    "@vaadin/a11y-base": "^25.0.0",
     "@vaadin/button": "^25.0.0",
     "@vaadin/component-base": "^25.0.0",
     "@vaadin/popover": "^25.0.0",
