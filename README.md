@@ -162,6 +162,61 @@ npm start
 
 A demo page will launch in your browser, showcasing how `<vcf-toolbar-layout>` handles overflow, reverse collapse, theming, grouping, and keyboard navigation.
 
+## Publishing a New Version
+
+Releases are published manually from `main`—there is no CI release workflow. You
+need write access to the repository and publish rights on the
+[`@vaadin-component-factory`](https://www.npmjs.com/org/vaadin-component-factory)
+npm organization.
+
+1. Start from an up-to-date, clean `main`:
+
+   ```bash
+   git switch main && git pull
+   ```
+
+2. Bump the version in **both** places—they must stay in sync:
+   - `version` in `package.json`
+   - the `static get version()` getter in `src/component/vcf-toolbar-layout.ts`
+
+3. Build and verify:
+
+   ```bash
+   npm ci
+   npm run build
+   npm run lint
+   npm test
+   ```
+
+   Run `npm run build` explicitly: the package's `prepublish` script is not
+   executed by `npm publish` (since npm 5 that hook only runs on `npm install`),
+   so publishing without it would ship a stale `dist/`.
+
+4. Commit and tag. Tags are the bare version, **without** a `v` prefix, so
+   create the tag by hand rather than with `npm version`:
+
+   ```bash
+   git commit -a -m "build: update version to 2.0.4"
+   git tag 2.0.4
+   git push origin main --follow-tags
+   ```
+
+5. Publish to npm:
+
+   ```bash
+   npm login          # check with: npm whoami
+   npm publish --access public
+   ```
+
+6. Create the GitHub release from the tag:
+
+   ```bash
+   gh release create 2.0.4 --generate-notes
+   ```
+
+Use a patch version for fixes, a minor version for new features, and a major
+version for breaking changes or a new Vaadin platform baseline.
+
 ## Contributing
 
 Contributions are welcome! Please review our [contributing guidelines](CONTRIBUTING.md) before submitting pull requests.
