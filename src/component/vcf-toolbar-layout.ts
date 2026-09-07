@@ -31,8 +31,11 @@ import {
 import '@vaadin/button';
 import '@vaadin/popover';
 import '@vaadin/vertical-layout';
-import { Popover } from '@vaadin/popover';
-import { Button } from '@vaadin/button';
+// Type-only: `Button` and `Popover` are used solely in type positions, so these
+// imports are erased at compile time. The side-effect imports above are what
+// actually register the elements and must stay.
+import type { Button } from '@vaadin/button';
+import type { Popover } from '@vaadin/popover';
 
 /**
  * The object used to localize `<vcf-toolbar-layout>`.
@@ -99,8 +102,8 @@ export class VcfToolbarLayout extends ResizeMixin(
         display: flex;
         align-items: var(--vcf-toolbar-align-items);
         position: relative;
-        min-width: 0;           /* Allow the host to shrink smaller children */
-        overflow: visible;      /* Ensure the popover can overflow the host */
+        min-width: 0; /* Allow the host to shrink smaller children */
+        overflow: visible; /* Ensure the popover can overflow the host */
         contain: layout;
         width: 100%;
         gap: var(--vcf-toolbar-layout-gap);
@@ -371,9 +374,13 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   protected _overflowContainer!: HTMLElement;
+
   protected _overflowButton!: HTMLElement;
+
   protected _popover!: Popover;
+
   private __resizeObserver!: ResizeObserver;
+
   private __updateTimeout: NodeJS.Timeout | null = null;
 
   /** The overflow button this component created, if the author slotted none. */
@@ -577,14 +584,14 @@ export class VcfToolbarLayout extends ResizeMixin(
     ) {
       while (overflowedItems.length > 0) {
         // temporarily move the item to the main container, then check for clipping
-        let overflowedItem = this.reverseCollapse
+        const overflowedItem = this.reverseCollapse
           ? overflowedItems[overflowedItems.length - 1]
           : overflowedItems[0];
         this._moveItemToMainContainer(overflowedItem);
 
         // check the right-most visible item for clipping
         const updatedVisibleItems = this._getVisibleItems(); // <-- not optimal, but we need to get the updated list of visible items
-        let lastItem = this.reverseCollapse
+        const lastItem = this.reverseCollapse
           ? updatedVisibleItems[updatedVisibleItems.length - 1]
           : overflowedItem;
         if (

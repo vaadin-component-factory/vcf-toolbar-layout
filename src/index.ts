@@ -1,1 +1,1 @@
-export { VcfToolbarLayout as VcfToolbarLayout } from './component/vcf-toolbar-layout.js';
+export { VcfToolbarLayout } from './component/vcf-toolbar-layout.js';
