@@ -25,6 +25,14 @@
 - **Grouping Items:**  
   Group items by passing in a layout/container element; grouped items collapse and display together in the overflow popover.
 
+## Requirements
+
+Vaadin **25.2.0** or newer. The component builds on `I18nMixin` from
+`@vaadin/component-base`, whose signature changed in 25.2.0, so it cannot run on
+25.0.x or 25.1.x — the module throws `Class extends value undefined is not a
+constructor or null` while loading and the whole application bundle fails with
+it. All `@vaadin/*` dependencies are therefore declared as `^25.2.0`.
+
 ## Installation
 
 Install the component via npm:
