@@ -381,7 +381,7 @@ export class VcfToolbarLayout extends ResizeMixin(
 
   private __resizeObserver!: ResizeObserver;
 
-  private __updateTimeout: NodeJS.Timeout | null = null;
+  private __updateTimeout: ReturnType<typeof setTimeout> | null = null;
 
   /** The overflow button this component created, if the author slotted none. */
   private __defaultOverflowButton?: HTMLElement;
@@ -390,6 +390,9 @@ export class VcfToolbarLayout extends ResizeMixin(
   private __pendingFocus: HTMLElement | 'overflow-button' | null = null;
 
   connectedCallback(): void {
+    // The guard the rule asks for is dead code here — the base class is always
+    // LitElement, and TypeScript rejects the condition with TS2774.
+    // eslint-disable-next-line wc/guard-super-call
     super.connectedCallback();
 
     // listen for resize events
@@ -400,6 +403,7 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   disconnectedCallback(): void {
+    // eslint-disable-next-line wc/guard-super-call -- see connectedCallback
     super.disconnectedCallback();
 
     // remove resize observer
@@ -460,6 +464,9 @@ export class VcfToolbarLayout extends ResizeMixin(
     );
   }
 
+  // Does not use `this`, but stays a method: it is a `protected` override point
+  // for subclasses that want a different overflow button.
+  // eslint-disable-next-line class-methods-use-this
   protected _createDefaultOverflowButton() {
     const button = document.createElement('vaadin-button') as Button;
     button.setAttribute('slot', 'overflow-button');
@@ -523,9 +530,8 @@ export class VcfToolbarLayout extends ResizeMixin(
   /**
    * Fired when the overflow button slot changes. This is likely because
    * a new overflow button was added or the existing one was removed.
-   * @param e
    */
-  protected _onOverflowButtonSlotChange(e: Event) {
+  protected _onOverflowButtonSlotChange() {
     // update our reference to new overflow button
     this._overflowButton = this._findOrCreateOverflowButton();
 
@@ -673,6 +679,9 @@ export class VcfToolbarLayout extends ResizeMixin(
    * @param extraSpaceRequired
    * @returns
    */
+  // Does not use `this`, but stays a method: it is a `protected` override point
+  // for subclasses that measure visibility differently.
+  // eslint-disable-next-line class-methods-use-this
   protected _isElementVisibleInContainer(
     element: Element,
     container: Element,
