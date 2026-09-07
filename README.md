@@ -14,8 +14,14 @@
   Two additional themes are provided (applied via the `theme` attribute):
   - **`fixed-width-prefix`** – aligns overflow popover items uniformly regardless of whether they include a prefix icon.
   - **`hide-icons`** – automatically hides icons on items within the overflow popover.
-- **Keyboard Navigation:**  
-  Complete keyboard support for menu navigation.
+- **Keyboard & Screen Reader Support:**  
+  Each item is its own tab stop. The overflow popup is a modal dialog: it traps
+  focus, moves focus into itself when opened, closes on `Escape` and returns
+  focus to the overflow button. When a focused item collapses into the overflow,
+  focus moves to the overflow button instead of being lost.
+- **Localization:**  
+  The `i18n` property localizes the accessible names of the overflow button and
+  the overflow popup.
 - **Grouping Items:**  
   Group items by passing in a layout/container element; grouped items collapse and display together in the overflow popover.
 
@@ -50,6 +56,18 @@ import '@vaadin-component-factory/vcf-toolbar-layout';
 ```html
 <vcf-toolbar-layout>
   <vaadin-button slot="overflow-button">View overflow items</vaadin-button>
+</vcf-toolbar-layout>
+```
+
+The component only labels the overflow button it creates itself. A custom
+overflow button keeps whatever accessible name you give it, so an icon-only one
+needs an explicit `aria-label`:
+
+```html
+<vcf-toolbar-layout>
+  <vaadin-button slot="overflow-button" theme="icon" aria-label="More options">
+    <vaadin-icon icon="vaadin:ellipsis-dots-v" slot="suffix"></vaadin-icon>
+  </vaadin-button>
 </vcf-toolbar-layout>
 ```
 
@@ -112,6 +130,26 @@ import '@vaadin-component-factory/vcf-toolbar-layout';
 
 - **`updateDebounceDelay` (Number):**  
   Sets the debounce delay (in milliseconds) from when a resize event occurs until the overflow items are updated—useful for managing performance during rapid resizes.
+
+- **`i18n` (Object):**  
+  Localizes the component's accessible names. Assign the whole object or just
+  the properties you want to change—partial objects are merged with the
+  defaults.
+
+  ```js
+  {
+    // Accessible name of the default overflow button
+    moreOptions: 'More options',
+    // Accessible name of the overflow popup
+    overflowMenu: 'More options'
+  }
+  ```
+
+  ```js
+  document.querySelector('vcf-toolbar-layout').i18n = {
+    moreOptions: "Plus d'options"
+  };
+  ```
 
 ## Running the Demo
 

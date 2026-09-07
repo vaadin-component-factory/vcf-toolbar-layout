@@ -16,22 +16,71 @@
  * limitations under the License.
  * #L%
  */
-import { html, LitElement, css } from 'lit';
+import { html, LitElement, css, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ElementMixin } from '@vaadin/component-base/src/element-mixin.js';
+import { I18nMixin } from '@vaadin/component-base/src/i18n-mixin.js';
 import { PolylitMixin } from '@vaadin/component-base/src/polylit-mixin.js';
 import { ResizeMixin } from '@vaadin/component-base/src/resize-mixin.js';
 import { SlotStylesMixin } from '@vaadin/component-base/src/slot-styles-mixin.js';
 import { ThemeDetectionMixin } from '@vaadin/vaadin-themable-mixin/vaadin-theme-detection-mixin.js';
+import {
+  getDeepActiveElement,
+  getFocusableElements,
+} from '@vaadin/a11y-base/src/focus-utils.js';
 import '@vaadin/button';
 import '@vaadin/popover';
 import '@vaadin/vertical-layout';
 import { Popover } from '@vaadin/popover';
 import { Button } from '@vaadin/button';
 
+/**
+ * The object used to localize `<vcf-toolbar-layout>`.
+ */
+export interface ToolbarLayoutI18n {
+  /** Accessible name of the default overflow button. */
+  moreOptions?: string;
+  /** Accessible name of the overflow popup. */
+  overflowMenu?: string;
+}
+
+const DEFAULT_I18N: ToolbarLayoutI18n = {
+  moreOptions: 'More options',
+  overflowMenu: 'More options',
+};
+
+/**
+ * Whether the (composed) active element is `item` or lives inside it.
+ * `item.contains()` alone is not enough: for a text field the active element
+ * is the `<input>` inside its shadow root.
+ */
+function containsDeepActiveElement(item: Element): boolean {
+  let node: Node | null = getDeepActiveElement() as Node | null;
+
+  while (node) {
+    if (node === item) {
+      return true;
+    }
+    node = node.parentNode ?? (node as ShadowRoot).host ?? null;
+  }
+
+  return false;
+}
+
+/**
+ * Move focus to `item`, or to the first focusable element inside it when the
+ * item is a grouping element that is not focusable itself.
+ */
+function focusItem(item: Element) {
+  const [first] = getFocusableElements(item as HTMLElement);
+  first?.focus();
+}
+
 @customElement('vcf-toolbar-layout')
 export class VcfToolbarLayout extends ResizeMixin(
-  ElementMixin(SlotStylesMixin(ThemeDetectionMixin(PolylitMixin(LitElement))))
+  I18nMixin(
+    ElementMixin(SlotStylesMixin(ThemeDetectionMixin(PolylitMixin(LitElement))))
+  )
 ) {
   static get is() {
     return 'vcf-toolbar-layout';
@@ -72,9 +121,23 @@ export class VcfToolbarLayout extends ResizeMixin(
     // so we need to inject global styles for those parts
     return [
       `
-      /* Hide label on icon buttons */
+      /* Visually hide the label on icon buttons, but keep it as the button's
+         accessible name. "display: none" would remove it from the
+         accessibility tree, and since the prefix and suffix parts are
+         aria-hidden the button would end up with no name at all. Same
+         declarations as the "sr-only" class in
+         @vaadin/a11y-base/src/styles/sr-only-styles.js. */
       ${tag} > vaadin-button[theme~="icon"]::part(label) {
-        display: none;
+        border: 0 !important;
+        clip: rect(1px, 1px, 1px, 1px) !important;
+        clip-path: inset(50%) !important;
+        height: 1px !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        position: absolute !important;
+        white-space: nowrap !important;
+        width: 1px !important;
       }
 
       /* Overflow button visibility */
@@ -280,11 +343,44 @@ export class VcfToolbarLayout extends ResizeMixin(
   @property({ type: Number, reflect: true })
   updateDebounceDelay: number = 20;
 
+  /**
+   * The object used to localize this component. To change the default
+   * localization, replace this with an object that provides all properties, or
+   * just the individual properties you want to change.
+   *
+   * The object has the following JSON structure and default values:
+   * ```js
+   * {
+   *   // Accessible name of the default overflow button
+   *   moreOptions: 'More options',
+   *   // Accessible name of the overflow popup
+   *   overflowMenu: 'More options'
+   * }
+   * ```
+   *
+   * Only the default overflow button is labelled. A custom button passed with
+   * `slot="overflow-button"` keeps whatever accessible name you give it.
+   */
+  declare i18n: ToolbarLayoutI18n;
+
+  /** Effective (default-merged) i18n, provided by `I18nMixin`. */
+  private declare __effectiveI18n: ToolbarLayoutI18n;
+
+  static get defaultI18n(): ToolbarLayoutI18n {
+    return DEFAULT_I18N;
+  }
+
   protected _overflowContainer!: HTMLElement;
   protected _overflowButton!: HTMLElement;
   protected _popover!: Popover;
   private __resizeObserver!: ResizeObserver;
   private __updateTimeout: NodeJS.Timeout | null = null;
+
+  /** The overflow button this component created, if the author slotted none. */
+  private __defaultOverflowButton?: HTMLElement;
+
+  /** Where focus should land once the current round of moves is finished. */
+  private __pendingFocus: HTMLElement | 'overflow-button' | null = null;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -329,23 +425,41 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   protected _findOrCreateOverflowButton() {
-    let button = this.querySelector('[slot="overflow-button"]') as HTMLElement;
+    let button = this.querySelector(
+      '[slot="overflow-button"]'
+    ) as HTMLElement | null;
 
     // create default overflow button if not found
     if (!button) {
-      button = this._createDefaultOverflowButton();
+      button =
+        this.__defaultOverflowButton ?? this._createDefaultOverflowButton();
+      this.__defaultOverflowButton = button;
       this.appendChild(button);
     }
 
     return button;
   }
 
+  /**
+   * Whether the current overflow button is the one this component created.
+   * Compared by identity: once appended, the default button is itself matched
+   * by the `[slot="overflow-button"]` selector, so a selector-based check
+   * would report every button as custom.
+   */
+  protected get _isDefaultOverflowButton(): boolean {
+    return (
+      !!this.__defaultOverflowButton &&
+      this._overflowButton === this.__defaultOverflowButton
+    );
+  }
+
   protected _createDefaultOverflowButton() {
-    let button = document.createElement('vaadin-button') as Button;
+    const button = document.createElement('vaadin-button') as Button;
     button.setAttribute('slot', 'overflow-button');
-    button.setAttribute('part', 'overflow-button');
     button.setAttribute('theme', 'icon');
-    button.setAttribute('aria-label', 'open menu');
+    // The popover sets this on its target too, but setting it here means the
+    // button is correct from creation. Keep in sync with the popover's role.
+    button.setAttribute('aria-haspopup', 'dialog');
     button.innerHTML =
       '<vaadin-icon icon="vaadin:ellipsis-dots-v" slot="suffix"></vaadin-icon>';
     return button;
@@ -366,12 +480,37 @@ export class VcfToolbarLayout extends ResizeMixin(
         theme="no-padding ${this.theme}"
         modal="true"
         position="bottom-start"
-        overlay-role="menu"
-        accessible-name-ref="overflowed menu items"
+        role="dialog"
+        aria-label="${this.__effectiveI18n.overflowMenu ?? ''}"
       >
         <slot name="overflow-content"></slot>
       </vaadin-popover>
     `;
+  }
+
+  protected updated(props: PropertyValues) {
+    super.updated(props);
+
+    if (props.has('__effectiveI18n')) {
+      this._updateOverflowButtonAriaLabel();
+    }
+  }
+
+  /**
+   * Apply the localized accessible name to the default overflow button. A
+   * custom button passed with `slot="overflow-button"` is left untouched.
+   */
+  protected _updateOverflowButtonAriaLabel() {
+    if (!this._overflowButton || !this._isDefaultOverflowButton) {
+      return;
+    }
+
+    const label = this.__effectiveI18n.moreOptions;
+    if (label) {
+      this._overflowButton.setAttribute('aria-label', label);
+    } else {
+      this._overflowButton.removeAttribute('aria-label');
+    }
   }
 
   /**
@@ -385,6 +524,10 @@ export class VcfToolbarLayout extends ResizeMixin(
 
     // update the popover target to the new overflow button
     this._popover.target = this._overflowButton;
+
+    // the default button is appended after `updated()` has already run, so
+    // its accessible name has to be (re-)applied here
+    this._updateOverflowButtonAriaLabel();
 
     // depending on the state of the overflow items, we may need to the new button to immediately be visible
     this._updateOverflowButtonState();
@@ -409,6 +552,9 @@ export class VcfToolbarLayout extends ResizeMixin(
    * Elements in the overflow container are hidden and only shown when the overflow button is clicked.
    */
   protected _updateOverflowingItems() {
+    const popoverWasOpened = !!this._popover?.opened;
+    const previouslyOverflowed = this._getOverflowedItems();
+
     // todo: include container gap/padding/etc value in calculation?
     const overflowButtonWidth = this._overflowButton
       ? this._overflowButton.getBoundingClientRect().width
@@ -482,8 +628,35 @@ export class VcfToolbarLayout extends ResizeMixin(
       }
     }
 
-    // show the overflow button if there are items in the overflow container
+    // show the overflow button if there are items in the overflow container.
+    // must happen before focusing it: it is `display: none` until then.
     this._updateOverflowButtonState();
+
+    const pendingFocus = this.__pendingFocus;
+    this.__pendingFocus = null;
+
+    if (popoverWasOpened && this.__overflowSetChanged(previouslyOverflowed)) {
+      // don't leave a stale popup listing items that have moved. Closing
+      // restores focus to the overflow button on its own, via the popover's
+      // `restoreFocusOnClose`.
+      this._popover.opened = false;
+      return;
+    }
+
+    if (pendingFocus === 'overflow-button') {
+      this._overflowButton.focus();
+    } else if (pendingFocus) {
+      focusItem(pendingFocus);
+    }
+  }
+
+  private __overflowSetChanged(previous: Element[]): boolean {
+    const current = this._getOverflowedItems();
+
+    return (
+      current.length !== previous.length ||
+      current.some((item, index) => item !== previous[index])
+    );
   }
 
   /**
@@ -518,6 +691,13 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   protected _moveItemToOverflowContainer(item: Element) {
+    // the item is about to be detached, and inside the closed popover it is
+    // `display: none`. Without this, focus would fall back to <body>.
+    // Resolved once, after all moves, in `_updateOverflowingItems()`.
+    if (containsDeepActiveElement(item)) {
+      this.__pendingFocus = 'overflow-button';
+    }
+
     item.remove();
 
     if (this.reverseCollapse) {
@@ -533,6 +713,10 @@ export class VcfToolbarLayout extends ResizeMixin(
   }
 
   protected _moveItemToMainContainer(item: Element) {
+    if (containsDeepActiveElement(item)) {
+      this.__pendingFocus = item as HTMLElement;
+    }
+
     item.remove();
 
     if (this.reverseCollapse) {
