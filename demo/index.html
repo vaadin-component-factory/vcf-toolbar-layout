@@ -292,7 +292,7 @@
                 { name: 'User 4' },
                 { name: 'User 5' },
             ];
-            combo.renderer = (root, combo, model) => {
+            combo.renderer = (root, owner, model) => {
                 const { item } = model;
                 root.textContent = item.name;
             };

@@ -99,6 +99,12 @@
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "error",
       "import/no-unresolved": "off",
+      "no-param-reassign": [
+        "error",
+        {
+          "props": false
+        }
+      ],
       "import/extensions": [
         "error",
         "always",
